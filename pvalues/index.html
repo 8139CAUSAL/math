@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P-Values &mdash; Math Primer</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="page">
+
+<nav class="sec-nav sec-nav--compact" role="navigation" aria-label="Section navigation">
+<a href="../phacking/" class="sec-nav__btn sec-nav__btn--back" aria-label="Go back">&larr; BACK</a>
+<h1 class="sec-nav__header">P-Values</h1>
+<a href="../regression_reading/" class="sec-nav__btn sec-nav__btn--next" aria-label="Go to next section">NEXT &rarr;</a>
+</nav>
+
+<p class="problem-statement">
+Everyone reports p-values. Almost no one interprets them correctly.
+</p>
+
+<div class="tab-selector">
+<button class="tab-btn active" data-tab="nhst" type="button">NHST</button>
+<button class="tab-btn" data-tab="misread" type="button">Misinterpretations</button>
+<button class="tab-btn" data-tab="convert" type="button">The Conversion</button>
+<button class="tab-btn" data-tab="interpret" type="button">Reading Results</button>
+</div>
+
+<!-- Tab 1: NHST Framework -->
+<div class="tab-panel active" id="panel-nhst">
+<div class="content-card">
+<h2>Null Hypothesis Significance Testing</h2>
+<p>NHST is the common framework that tests data against a null hypothesis (H<sub>0</sub>). A conventional cutoff is p &le; 0.05 to reject H<sub>0</sub>.</p>
+
+<h3>What a p-value actually is</h3>
+<div class="key-definition">
+<p>The p-value is the probability of getting results as extreme as, or more extreme than, what we observed &mdash; <strong>assuming the null hypothesis is true</strong>.</p>
+</div>
+<p>The value is always conditional on H<sub>0</sub> being true. But what we actually want is the reverse: <em>the probability that the null hypothesis is true, given the data we observed</em>.</p>
+
+<h3>How "extreme" is measured</h3>
+<p>"Extreme" means far in the test statistic's null distribution. For z/t-based tests we standardise by the standard error. For other tests (e.g., &chi;&sup2;, F), extremeness is on those statistics' own scales.</p>
+</div>
+</div>
+
+<!-- Tab 2: Common Misinterpretations -->
+<div class="tab-panel" id="panel-misread">
+<div class="content-card">
+<h2>Common Misinterpretations</h2>
+<p>From Goodman's <strong>"A Dirty Dozen"</strong> &mdash; four mistakes that persist across research and industry:</p>
+<ol class="misinterpretation-list">
+<li>"If p = .05, the null has a 5% chance of being true."</li>
+<li>"A non-significant p (&gt; .05) means no difference."</li>
+<li>"p = .05 means these exact data would occur only 5% of the time under H<sub>0</sub>."</li>
+<li>"If you reject at p = .05, the Type I error probability for this decision is 5%."</li>
+</ol>
+</div>
+</div>
+
+<!-- Tab 3: The Conversion -->
+<div class="tab-panel" id="panel-convert">
+<div class="content-card">
+<h2>From P-Values to Pr(H<sub>0</sub> | Data)</h2>
+<p>You can convert a standard regression output into the probability the null is actually true. You need three numbers:</p>
+
+<ol class="steps-list">
+<li>Get <strong>T Stat</strong>, <strong>Observations (n)</strong>, and <strong>Degrees of Freedom (df)</strong> from your regression output.</li>
+<li>Compute an approximate Bayes factor favouring the null (BF<sub>01</sub>) using these values.</li>
+<li>Convert BF<sub>01</sub> into Pr(H<sub>0</sub> | data) under neutral 50/50 prior odds.</li>
+</ol>
+
+<h3>Excel-ready formulas</h3>
+
+<div class="formula-box">
+<span class="label">Part 1: Bayes Factor (BF<sub>01</sub>)</span>
+=SQRT(n) * (1 + (T_Stat^2 / df)) ^ (-n / 2)
+</div>
+
+<div class="formula-box">
+<span class="label">Part 2: Null Probability</span>
+=BF / (1 + BF)
+</div>
+</div>
+</div>
+
+<!-- Tab 4: Reading Results -->
+<div class="tab-panel" id="panel-interpret">
+<div class="content-card">
+<h2>Reading the Result</h2>
+<p><strong>Null Probability</strong> is the probability the null hypothesis is true given your data.</p>
+
+<div class="interp-grid">
+<div class="interp-item">
+<div class="interp-value">&gt; 0.5</div>
+<div class="interp-label">Null more likely true than false</div>
+</div>
+<div class="interp-item">
+<div class="interp-value">&lt; 0.5</div>
+<div class="interp-label">Alternative more likely true than null</div>
+</div>
+<div class="interp-item">
+<div class="interp-value">= 0.5</div>
+<div class="interp-label">Both hypotheses equally likely</div>
+</div>
+<div class="interp-item example">
+<div class="interp-value">0.73</div>
+<div class="interp-label">Example: 73% chance the null is true</div>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<script>
+(function(){
+'use strict';
+var btns = document.querySelectorAll('.tab-btn');
+var panels = document.querySelectorAll('.tab-panel');
+
+function activate(tabId) {
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].classList[btns[i].dataset.tab === tabId ? 'add' : 'remove']('active');
+  }
+  for (var j = 0; j < panels.length; j++) {
+    panels[j].classList[panels[j].id === 'panel-' + tabId ? 'add' : 'remove']('active');
+  }
+}
+
+for (var k = 0; k < btns.length; k++) {
+  btns[k].addEventListener('click', function() { activate(this.dataset.tab); });
+}
+})();
+</script>
+
+</body>
+</html>

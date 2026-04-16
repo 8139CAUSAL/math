@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P-Hacking Simulator &mdash; Math Primer</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="page">
+
+<nav class="sec-nav sec-nav--compact" role="navigation" aria-label="Section navigation">
+<a href="../" class="sec-nav__btn sec-nav__btn--back" aria-label="Go back">&larr; BACK</a>
+<h1 class="sec-nav__header">P-Hacking Simulator</h1>
+<a href="../pvalues/" class="sec-nav__btn sec-nav__btn--next" aria-label="Go to next section">NEXT &rarr;</a>
+</nav>
+
+<p class="problem-statement">
+Watch yourself get fooled by random noise.
+</p>
+
+<div class="tab-selector">
+<button class="tab-btn active" data-tab="setup" type="button">The Experiment</button>
+<button class="tab-btn" data-tab="run" type="button">Run the Experiment</button>
+</div>
+
+<!-- TAB 1: THE SETUP -->
+<div class="tab-panel active" id="ph-panel-setup">
+<div class="stage">
+
+<p class="prose">
+We're testing whether a <strong>new supplement</strong> increases cognitive performance.
+We recruit participants and randomly assign them to two groups:
+</p>
+
+<div class="callout">
+<div class="callout-title">The Setup</div>
+<strong>Group A:</strong> Takes the supplement<br>
+<strong>Group B:</strong> Takes a placebo (sugar pill)
+</div>
+
+<p class="prose">
+<strong>The secret you know (but a researcher wouldn't):</strong> In this simulation,
+<em>both groups are pulling scores from the exact same random distribution</em>.
+The supplement does absolutely nothing. Any difference you see is pure noise.
+</p>
+
+<p class="prose">
+Your task: Keep running experiments until you find a &ldquo;statistically significant&rdquo; result (p &lt; 0.05).
+</p>
+
+</div>
+</div>
+
+<!-- TAB 2: RUN THE EXPERIMENT -->
+<div class="tab-panel" id="ph-panel-run">
+<div class="stage">
+
+<div class="arena">
+<div class="strip-plot-container">
+<canvas id="ph-stripCanvas"></canvas>
+</div>
+<div class="plot-legend">
+<div class="legend-item"><span class="legend-dot a"></span> Group A</div>
+<div class="legend-item"><span class="legend-dot b"></span> Group B</div>
+<div class="legend-item"><span class="legend-line dashed"></span> True Mean (50)</div>
+</div>
+
+<div class="groups-container" style="margin-top: 24px;">
+<div class="group group-a" id="ph-groupA">
+<div class="group-label">Group A &mdash; Supplement</div>
+<div class="participants" id="ph-participantsA"></div>
+<div class="group-stats">
+<span class="mean-label">Mean Score</span>
+<span class="mean-value" id="ph-meanA">&mdash;</span>
+</div>
+</div>
+
+<div class="vs-divider">
+<div class="vs-text">vs</div>
+</div>
+
+<div class="group group-b" id="ph-groupB">
+<div class="group-label">Group B &mdash; Placebo</div>
+<div class="participants" id="ph-participantsB"></div>
+<div class="group-stats">
+<span class="mean-label">Mean Score</span>
+<span class="mean-value" id="ph-meanB">&mdash;</span>
+</div>
+</div>
+</div>
+
+<div class="result-banner waiting" id="ph-resultBanner">
+Click &ldquo;Run Experiment&rdquo; to start
+</div>
+</div>
+
+<div class="controls">
+<button class="btn btn-primary" id="ph-btnRun" type="button">Run Experiment</button>
+<button class="btn btn-ghost" id="ph-btnReset" type="button">Reset</button>
+</div>
+<div class="attempt-counter" id="ph-attemptCounter">Experiments run: 0</div>
+
+</div>
+</div>
+
+<!-- STAGE 3: THE HOOK -->
+<section class="stage hidden" id="ph-stage3">
+<div class="stage-header">
+<span class="stage-number">!</span>
+<span class="stage-title">You Found Something!</span>
+</div>
+
+<div class="callout success">
+<div class="callout-title">Significant Result</div>
+Group A scored significantly higher than Group B (p &lt; 0.05).<br>
+The supplement appears to work!
+</div>
+
+<p class="prose">
+Look at the plot above. The purple dots (Group A) cluster toward the right.
+It <em>looks</em> like the supplement worked.
+</p>
+
+<p class="prose">
+<strong>But wait.</strong> A skeptic might say: &ldquo;Maybe you just got lucky and randomly
+assigned the naturally high-performers to Group A. Maybe those specific people are just&hellip; better.&rdquo;
+</p>
+
+<div class="callout warning">
+<div class="callout-title">The Question</div>
+Is Group A genuinely superior? Or was it just a lucky draw?
+</div>
+
+<p class="prose">
+There's only one way to find out: <strong>Test the exact same people again.</strong>
+</p>
+
+<div class="controls">
+<button class="btn btn-danger" id="ph-btnRetest" type="button">Re-Test These Same Participants</button>
+</div>
+</section>
+
+<!-- STAGE 4: THE REVEAL -->
+<section class="stage hidden" id="ph-stage4">
+<div class="stage-header">
+<span class="stage-number">!</span>
+<span class="stage-title">The Re-Test Results</span>
+</div>
+
+<p class="prose">
+We tested the <strong>exact same participants</strong> one week later.
+If Group A was truly special, they should score high again.
+</p>
+
+<div class="comparison-grid">
+<div class="comparison-card">
+<h4>Original Test</h4>
+<div class="score-row">
+<span class="label">Group A Mean</span>
+<span class="value" id="ph-origMeanA">&mdash;</span>
+</div>
+<div class="score-row">
+<span class="label">Group B Mean</span>
+<span class="value" id="ph-origMeanB">&mdash;</span>
+</div>
+<div class="score-row">
+<span class="label">Difference</span>
+<span class="value" id="ph-origDiff">&mdash;</span>
+</div>
+</div>
+
+<div class="comparison-card">
+<h4>Re-Test (Same People)</h4>
+<div class="score-row">
+<span class="label">Group A Mean</span>
+<span class="value" id="ph-retestMeanA">&mdash;</span>
+</div>
+<div class="score-row">
+<span class="label">Group B Mean</span>
+<span class="value" id="ph-retestMeanB">&mdash;</span>
+</div>
+<div class="score-row">
+<span class="label">Difference</span>
+<span class="value" id="ph-retestDiff">&mdash;</span>
+</div>
+</div>
+</div>
+
+<div class="reveal-message">
+<h3>The Illusion Evaporated</h3>
+<p>
+Group A's &ldquo;superiority&rdquo; vanished. On re-test, their scores regressed toward the average.
+They weren't special&mdash;they just had a lucky day.
+</p>
+<p style="margin-top: 16px;">
+<strong>This is regression to the mean.</strong> When you select a group because they
+scored high once, they will almost always score lower the next time&mdash;not because
+anything changed, but because extreme results are rarely repeated.
+</p>
+</div>
+
+<div class="callout danger" style="margin-top: 24px;">
+<div class="callout-title">The Lesson</div>
+A p-value &lt; 0.05 doesn't mean you found truth. It means you found something unusual enough
+to be worth investigating. If you test 20 hypotheses, <strong>one will be &ldquo;significant&rdquo;
+by pure chance</strong>. This is P-hacking: running enough tests until the noise aligns
+in your favor, then publishing only that result.
+</div>
+
+<div class="controls" style="margin-top: 24px;">
+<button class="btn btn-primary" id="ph-btnRestart" type="button">Try Again</button>
+</div>
+</section>
+
+</div>
+
+<script>
+(function(){
+'use strict';
+
+var N = 10, MEAN = 50, SD = 15, ALPHA = 0.05;
+
+var attempts = 0;
+var lastScoresA = [], lastScoresB = [];
+var lastMeanA = 0, lastMeanB = 0, lastPValue = 1;
+
+function $(id) { return document.getElementById(id); }
+var els = {
+  canvas: $('ph-stripCanvas'),
+  participantsA: $('ph-participantsA'),
+  participantsB: $('ph-participantsB'),
+  meanA: $('ph-meanA'),
+  meanB: $('ph-meanB'),
+  resultBanner: $('ph-resultBanner'),
+  groupA: $('ph-groupA'),
+  groupB: $('ph-groupB'),
+  btnRun: $('ph-btnRun'),
+  btnReset: $('ph-btnReset'),
+  btnRetest: $('ph-btnRetest'),
+  btnRestart: $('ph-btnRestart'),
+  attemptCounter: $('ph-attemptCounter'),
+  stage3: $('ph-stage3'),
+  stage4: $('ph-stage4'),
+  origMeanA: $('ph-origMeanA'),
+  origMeanB: $('ph-origMeanB'),
+  origDiff: $('ph-origDiff'),
+  retestMeanA: $('ph-retestMeanA'),
+  retestMeanB: $('ph-retestMeanB'),
+  retestDiff: $('ph-retestDiff')
+};
+
+function randomNormal(m, sd) {
+  var u = 0, v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v) * sd + m;
+}
+
+function mean(arr) {
+  var s = 0; for (var i = 0; i < arr.length; i++) s += arr[i];
+  return s / arr.length;
+}
+
+function variance(arr) {
+  var m = mean(arr), s = 0;
+  for (var i = 0; i < arr.length; i++) s += (arr[i] - m) * (arr[i] - m);
+  return s / (arr.length - 1);
+}
+
+function lgamma(x) {
+  var c = [0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if (x < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * x)) - lgamma(1 - x);
+  x -= 1;
+  var a = c[0], t = x + 7.5;
+  for (var i = 1; i < 9; i++) a += c[i] / (x + i);
+  return 0.5 * Math.log(2 * Math.PI) + (x + 0.5) * Math.log(t) - t + Math.log(a);
+}
+
+function betaCF(x, a, b) {
+  var qab = a + b, qap = a + 1, qam = a - 1;
+  var c = 1, d = 1 - qab * x / qap;
+  if (Math.abs(d) < 1e-10) d = 1e-10;
+  d = 1 / d; var h = d;
+  for (var m = 1; m <= 100; m++) {
+    var m2 = 2 * m;
+    var aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+    d = 1 + aa * d; if (Math.abs(d) < 1e-10) d = 1e-10;
+    c = 1 + aa / c; if (Math.abs(c) < 1e-10) c = 1e-10;
+    d = 1 / d; h *= d * c;
+    aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+    d = 1 + aa * d; if (Math.abs(d) < 1e-10) d = 1e-10;
+    c = 1 + aa / c; if (Math.abs(c) < 1e-10) c = 1e-10;
+    d = 1 / d; var del = d * c; h *= del;
+    if (Math.abs(del - 1) < 1e-10) break;
+  }
+  return h;
+}
+
+function incompleteBeta(x, a, b) {
+  if (x === 0) return 0; if (x === 1) return 1;
+  var bt = Math.exp(lgamma(a + b) - lgamma(a) - lgamma(b) + a * Math.log(x) + b * Math.log(1 - x));
+  if (x < (a + 1) / (a + b + 2)) return bt * betaCF(x, a, b) / a;
+  return 1 - bt * betaCF(1 - x, b, a) / b;
+}
+
+function welchTTest(a, b) {
+  var nA = a.length, nB = b.length;
+  var mA = mean(a), mB = mean(b);
+  var vA = variance(a), vB = variance(b);
+  var se = Math.sqrt(vA / nA + vB / nB);
+  if (se === 0) return { t: 0, p: 1, meanA: mA, meanB: mB };
+  var t = (mA - mB) / se;
+  var num = Math.pow(vA / nA + vB / nB, 2);
+  var denom = Math.pow(vA / nA, 2) / (nA - 1) + Math.pow(vB / nB, 2) / (nB - 1);
+  var df = num / denom;
+  var x = df / (df + t * t);
+  var p = incompleteBeta(x, df / 2, 0.5);
+  return { t: t, p: p, meanA: mA, meanB: mB };
+}
+
+function seededRandom(seed) {
+  var x = Math.sin(seed * 9999) * 10000;
+  return x - Math.floor(x);
+}
+
+function drawStripPlot(scoresA, scoresB) {
+  var canvas = els.canvas;
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  var w = rect.width, h = rect.height;
+  var pad = { left: 40, right: 20, top: 30, bottom: 30 };
+  var pw = w - pad.left - pad.right;
+  var ph2 = h - pad.top - pad.bottom;
+  var xMin = 10, xMax = 90;
+  function mapX(v) { return pad.left + ((v - xMin) / (xMax - xMin)) * pw; }
+  var yA = pad.top + ph2 * 0.35;
+  var yB = pad.top + ph2 * 0.65;
+  var jitter = 12;
+
+  ctx.clearRect(0, 0, w, h);
+
+  ctx.beginPath();
+  ctx.moveTo(pad.left, h - pad.bottom);
+  ctx.lineTo(w - pad.right, h - pad.bottom);
+  ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'center';
+  for (var tick = 20; tick <= 80; tick += 20) {
+    var tx = mapX(tick);
+    ctx.beginPath(); ctx.moveTo(tx, h - pad.bottom); ctx.lineTo(tx, h - pad.bottom + 5); ctx.stroke();
+    ctx.fillText(tick.toString(), tx, h - pad.bottom + 16);
+  }
+
+  var tmx = mapX(MEAN);
+  ctx.beginPath(); ctx.moveTo(tmx, pad.top - 10); ctx.lineTo(tmx, h - pad.bottom);
+  ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.setLineDash([4, 4]); ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = 'rgba(255,255,255,0.5)'; ctx.font = '9px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'center'; ctx.fillText('TRUE', tmx, pad.top - 2);
+
+  ctx.textAlign = 'right'; ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillStyle = '#a78bfa'; ctx.fillText('A', pad.left - 10, yA + 4);
+  ctx.fillStyle = '#fb923c'; ctx.fillText('B', pad.left - 10, yB + 4);
+
+  function drawDots(scores, baseY, color, gi) {
+    if (!scores || !scores.length) return;
+    for (var i = 0; i < scores.length; i++) {
+      var dx = mapX(scores[i]);
+      var j2 = (seededRandom(i + gi * 100) - 0.5) * jitter;
+      ctx.beginPath(); ctx.arc(dx, baseY + j2, 6, 0, Math.PI * 2);
+      ctx.fillStyle = color; ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1; ctx.stroke();
+    }
+  }
+
+  function drawMeanMarker(val, baseY, color) {
+    if (val == null) return;
+    var mx = mapX(val), sz = 8;
+    ctx.beginPath();
+    ctx.moveTo(mx, baseY + jitter + 8);
+    ctx.lineTo(mx - sz, baseY + jitter + 8 + sz * 1.5);
+    ctx.lineTo(mx + sz, baseY + jitter + 8 + sz * 1.5);
+    ctx.closePath(); ctx.fillStyle = color; ctx.fill();
+  }
+
+  if (scoresA && scoresB) {
+    drawDots(scoresB, yB, '#fb923c', 1);
+    drawDots(scoresA, yA, '#a78bfa', 0);
+    drawMeanMarker(mean(scoresA), yA, '#a78bfa');
+    drawMeanMarker(mean(scoresB), yB, '#fb923c');
+  } else {
+    ctx.globalAlpha = 0.2;
+    for (var i = 0; i < N; i++) {
+      var fA = MEAN + (seededRandom(i) - 0.5) * 30;
+      var fB = MEAN + (seededRandom(i + 50) - 0.5) * 30;
+      var jA = (seededRandom(i) - 0.5) * jitter;
+      var jB = (seededRandom(i + 100) - 0.5) * jitter;
+      ctx.beginPath(); ctx.arc(mapX(fA), yA + jA, 6, 0, Math.PI * 2); ctx.fillStyle = '#a78bfa'; ctx.fill();
+      ctx.beginPath(); ctx.arc(mapX(fB), yB + jB, 6, 0, Math.PI * 2); ctx.fillStyle = '#fb923c'; ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+}
+
+function generateScores() {
+  var s = [];
+  for (var i = 0; i < N; i++) s.push(randomNormal(MEAN, SD));
+  return s;
+}
+
+function renderParticipants(containerId, scores, prevScores) {
+  var container = document.getElementById(containerId);
+  container.innerHTML = '';
+  var m = mean(scores);
+  for (var i = 0; i < scores.length; i++) {
+    var div = document.createElement('div');
+    div.className = 'participant';
+    if (scores[i] > m + 8) div.classList.add('high');
+    else if (scores[i] < m - 8) div.classList.add('low');
+    div.textContent = Math.round(scores[i]);
+    if (prevScores && prevScores[i] !== undefined) {
+      var delta = scores[i] - prevScores[i];
+      if (Math.abs(delta) > 3) {
+        var sp = document.createElement('span');
+        sp.className = 'delta';
+        sp.textContent = (delta > 0 ? '+' : '') + Math.round(delta);
+        div.appendChild(sp);
+        div.classList.add('regressed');
+      }
+    }
+    container.appendChild(div);
+  }
+}
+
+function populateBlanks() {
+  var pa = els.participantsA, pb = els.participantsB;
+  pa.innerHTML = ''; pb.innerHTML = '';
+  for (var i = 0; i < N; i++) {
+    var dA = document.createElement('div'); dA.className = 'participant'; dA.textContent = '\u2014'; pa.appendChild(dA);
+    var dB = document.createElement('div'); dB.className = 'participant'; dB.textContent = '\u2014'; pb.appendChild(dB);
+  }
+}
+
+function runExperiment() {
+  attempts++;
+  els.attemptCounter.textContent = 'Experiments run: ' + attempts;
+  var sA = generateScores(), sB = generateScores();
+  var result = welchTTest(sA, sB);
+  lastScoresA = sA; lastScoresB = sB;
+  lastMeanA = result.meanA; lastMeanB = result.meanB; lastPValue = result.p;
+
+  drawStripPlot(sA, sB);
+  renderParticipants('ph-participantsA', sA);
+  renderParticipants('ph-participantsB', sB);
+  els.meanA.textContent = result.meanA.toFixed(1);
+  els.meanB.textContent = result.meanB.toFixed(1);
+
+  els.groupA.classList.remove('winner');
+  els.groupB.classList.remove('winner');
+
+  if (result.p < ALPHA && result.meanA > result.meanB) {
+    els.resultBanner.className = 'result-banner significant';
+    els.resultBanner.innerHTML = '<strong>SIGNIFICANT!</strong> Group A outperformed Group B.<div class="p-value">p = ' + result.p.toFixed(4) + '</div>';
+    els.groupA.classList.add('winner');
+    setTimeout(function() {
+      els.stage3.classList.remove('hidden');
+      els.stage3.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      els.btnRun.disabled = true;
+    }, 500);
+  } else {
+    els.resultBanner.className = 'result-banner not-significant';
+    els.resultBanner.innerHTML = 'Not significant. Keep trying.<div class="p-value">p = ' + result.p.toFixed(4) + '</div>';
+    els.btnRun.classList.add('shake');
+    setTimeout(function() { els.btnRun.classList.remove('shake'); }, 300);
+  }
+}
+
+function runRetest() {
+  var rA = generateScores(), rB = generateScores();
+  var rResult = welchTTest(rA, rB);
+  drawStripPlot(rA, rB);
+  els.stage3.classList.add('hidden');
+  els.stage4.classList.remove('hidden');
+
+  els.origMeanA.textContent = lastMeanA.toFixed(1);
+  els.origMeanB.textContent = lastMeanB.toFixed(1);
+  var od = lastMeanA - lastMeanB;
+  els.origDiff.textContent = '+' + od.toFixed(1) + ' (A wins)';
+  els.origDiff.className = 'value up';
+
+  els.retestMeanA.textContent = rResult.meanA.toFixed(1);
+  els.retestMeanB.textContent = rResult.meanB.toFixed(1);
+  var rd = rResult.meanA - rResult.meanB;
+  if (Math.abs(rd) < 3) {
+    els.retestDiff.textContent = rd.toFixed(1) + ' (No difference)';
+    els.retestDiff.className = 'value';
+  } else if (rd > 0) {
+    els.retestDiff.textContent = '+' + rd.toFixed(1);
+    els.retestDiff.className = 'value up';
+  } else {
+    els.retestDiff.textContent = rd.toFixed(1) + ' (B wins now!)';
+    els.retestDiff.className = 'value down';
+  }
+
+  renderParticipants('ph-participantsA', rA, lastScoresA);
+  renderParticipants('ph-participantsB', rB, lastScoresB);
+  els.meanA.textContent = rResult.meanA.toFixed(1);
+  els.meanB.textContent = rResult.meanB.toFixed(1);
+
+  els.resultBanner.className = 'result-banner not-significant';
+  els.resultBanner.innerHTML = 'Re-test: Not significant.<div class="p-value">p = ' + rResult.p.toFixed(4) + '</div>';
+  els.groupA.classList.remove('winner');
+  els.stage4.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetAll() {
+  attempts = 0; lastScoresA = []; lastScoresB = [];
+  els.attemptCounter.textContent = 'Experiments run: 0';
+  els.meanA.textContent = '\u2014'; els.meanB.textContent = '\u2014';
+  els.groupA.classList.remove('winner'); els.groupB.classList.remove('winner');
+  els.resultBanner.className = 'result-banner waiting';
+  els.resultBanner.textContent = 'Click \u201cRun Experiment\u201d to start';
+  els.btnRun.disabled = false;
+  els.stage3.classList.add('hidden');
+  els.stage4.classList.add('hidden');
+  drawStripPlot(null, null);
+  populateBlanks();
+}
+
+var tabBtns = document.querySelectorAll('.tab-btn');
+var tabPanels = document.querySelectorAll('.tab-panel');
+
+function activateTab(tabId) {
+  for (var i = 0; i < tabBtns.length; i++) {
+    tabBtns[i].classList[tabBtns[i].dataset.tab === tabId ? 'add' : 'remove']('active');
+  }
+  for (var j = 0; j < tabPanels.length; j++) {
+    tabPanels[j].classList[tabPanels[j].id === 'ph-panel-' + tabId ? 'add' : 'remove']('active');
+  }
+  if (tabId === 'run') {
+    setTimeout(function() {
+      if (lastScoresA.length > 0) drawStripPlot(lastScoresA, lastScoresB);
+      else drawStripPlot(null, null);
+    }, 20);
+  }
+}
+
+for (var ti = 0; ti < tabBtns.length; ti++) {
+  tabBtns[ti].addEventListener('click', function() { activateTab(this.dataset.tab); });
+}
+
+els.btnRun.addEventListener('click', runExperiment);
+els.btnReset.addEventListener('click', function() { resetAll(); activateTab('run'); });
+els.btnRetest.addEventListener('click', runRetest);
+els.btnRestart.addEventListener('click', function() { resetAll(); activateTab('setup'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+window.addEventListener('resize', function() {
+  var runPanel = document.getElementById('ph-panel-run');
+  if (runPanel && runPanel.classList.contains('active')) {
+    if (lastScoresA.length > 0) drawStripPlot(lastScoresA, lastScoresB);
+    else drawStripPlot(null, null);
+  }
+});
+
+populateBlanks();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample Size &amp; Power &mdash; Math Primer</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<div class="page">
+
+<nav class="sec-nav sec-nav--compact" role="navigation" aria-label="Section navigation">
+<a href="../regression_reading/" class="sec-nav__btn sec-nav__btn--back" aria-label="Go back">&larr; BACK</a>
+<h1 class="sec-nav__header">Sample Size &amp; Power</h1>
+<a href="../ttable/" class="sec-nav__btn sec-nav__btn--next" aria-label="Go to next section">NEXT &rarr;</a>
+</nav>
+
+<p class="problem-statement">
+How many observations do you need? Power analysis finds the Goldilocks number&mdash;large enough to detect real effects, small enough not to waste resources.
+</p>
+
+<div class="tab-selector">
+<button class="tab-btn active" data-tab="concepts" type="button">The Concepts</button>
+<button class="tab-btn" data-tab="ttest" type="button">Why T-Tests</button>
+<button class="tab-btn" data-tab="calculator" type="button">Calculator</button>
+<button class="tab-btn" data-tab="visualize" type="button">Visualize Power</button>
+<button class="tab-btn" data-tab="mistakes" type="button">Common Mistakes</button>
+</div>
+
+<!-- Tab 1: The Concepts -->
+<div class="tab-panel active" id="pw-panel-concepts">
+<div class="content-card">
+<h2>Why Sample Size Matters</h2>
+
+<p>In any study&mdash;clinical trial, A/B test, or marketing experiment&mdash;you estimate population parameters using a sample. The core question: <strong>how many observations do you need?</strong></p>
+
+<div class="key-definition">
+<p><strong>Too small:</strong> You lack statistical power to detect real effects. Time, money, and ethical capital are wasted on inconclusive results.<br><br>
+<strong>Too large:</strong> You waste resources and may detect statistically significant but practically meaningless differences.</p>
+</div>
+
+<h3>The Four Levers</h3>
+<p>Power analysis balances four interconnected parameters. Adjusting one changes the required sample size:</p>
+
+<div class="levers-grid">
+<div class="lever-card alpha">
+<div class="lever-title">&alpha; (Alpha)</div>
+<p><strong>Type I error risk:</strong> probability of a false positive.</p>
+<p>Standard: 0.05 (5% risk). Lower &alpha; &rarr; larger sample needed.</p>
+</div>
+
+<div class="lever-card power">
+<div class="lever-title">1&minus;&beta; (Power)</div>
+<p><strong>Probability of detecting</strong> a real effect when one exists.</p>
+<p>Standard: 0.80 or 0.90. Higher power &rarr; larger sample needed.</p>
+</div>
+
+<div class="lever-card effect">
+<div class="lever-title">&delta; (Raw Difference)</div>
+<p><strong>MCID:</strong> smallest difference that matters practically.</p>
+<p>Smaller difference to detect &rarr; much larger sample needed.</p>
+</div>
+
+<div class="lever-card variance">
+<div class="lever-title">&sigma; (Standard Deviation)</div>
+<p><strong>Noise level:</strong> natural data fluctuation.</p>
+<p>More noise &rarr; larger sample needed to separate signal.</p>
+</div>
+</div>
+
+<h3>The Formula</h3>
+<p>For a two-sample t-test with equal groups, the sample size per group is:</p>
+
+<div class="formula-box">
+<span class="label">Iterative T-Based Formula</span>
+n = 2 &times; (t<sub>&alpha;,df</sub> + t<sub>&beta;,df</sub>)&sup2; / d&sup2;
+<br>where d = &delta;/&sigma; (Cohen&rsquo;s d) and df = 2(n&minus;1)
+</div>
+
+<div class="callout">
+<div class="callout-title">Why Iterative?</div>
+The degrees of freedom (df) depend on n, and the critical t-value depends on df. So the formula is circular&mdash;we solve it iteratively: start with a Z-approximation, compute df, look up the t-critical value, recompute n, and repeat until it converges. The Calculator tab does this automatically.
+</div>
+
+<p>Since <em>Cohen&rsquo;s d = &delta; / &sigma;</em>, a smaller raw difference (&delta;) or a larger standard deviation (&sigma;) both shrink d, which increases the required sample size. This is why noisy data and small effects are so expensive to study.</p>
+</div>
+</div>
+
+<!-- Tab 2: Why T-Tests -->
+<div class="tab-panel" id="pw-panel-ttest">
+<div class="content-card">
+<h2>Why We Use the T-Distribution</h2>
+
+<p>Many introductory texts present the sample size formula using Z-scores from the normal distribution. That is an approximation. Here is why the <strong>t-distribution</strong> is the correct choice&mdash;and what changes.</p>
+
+<h3>The Problem with Z</h3>
+<p>The normal (Z) distribution assumes you <strong>know the true population standard deviation &sigma;</strong>. In practice, you never do&mdash;you estimate it from the sample. That extra uncertainty means the test statistic follows a <em>t-distribution</em>, not a normal.</p>
+
+<div class="key-definition">
+<p>The t-distribution is wider than the normal, especially for small samples. This means <strong>t-critical values are larger than Z-critical values</strong>, which means you need more observations to achieve the same power.</p>
+</div>
+
+<h3>Degrees of Freedom</h3>
+<p>The t-distribution&rsquo;s shape depends on <strong>degrees of freedom (df)</strong>. For a two-sample t-test with n observations per group:</p>
+
+<div class="formula-box">
+<span class="label">Degrees of Freedom</span>
+df = 2(n &minus; 1) = 2n &minus; 2
+</div>
+
+<p>As df grows (larger samples), the t-distribution converges to the normal. At df &ge; 120, the difference is negligible. At df = 10, it matters a lot.</p>
+
+<h3>How Much Does It Matter?</h3>
+
+<div class="stat-grid">
+<div class="stat-item">
+<div class="stat-value">1.960</div>
+<div class="stat-label">Z-critical (&alpha;=0.05)</div>
+</div>
+<div class="stat-item">
+<div class="stat-value">2.101</div>
+<div class="stat-label">t-critical (df=18, n=10)</div>
+</div>
+<div class="stat-item">
+<div class="stat-value">2.024</div>
+<div class="stat-label">t-critical (df=38, n=20)</div>
+</div>
+<div class="stat-item">
+<div class="stat-value">1.984</div>
+<div class="stat-label">t-critical (df=98, n=50)</div>
+</div>
+</div>
+
+<p>At n=10 per group, using Z instead of t <strong>underestimates</strong> the required sample size by ~7%. At n=50, the error drops to ~1%. Our calculator uses the exact t-distribution with iterative convergence, so it is accurate at all sample sizes.</p>
+
+<div class="callout warning">
+<div class="callout-title">Connecting the Dots</div>
+This is the same t-distribution used in our <a href="../regression_reading/">Reading Regressions</a> page (for t-stats and p-values) and in the <a href="../phacking/">P-Hacking Simulator</a> (for Welch&rsquo;s t-test). The math is identical across all three pages.
+</div>
+
+<h3>Reference Tables</h3>
+<p>Need to look up a critical value by hand? Use our reference tables:</p>
+<p>
+<a href="../ttable/" class="ref-link">T-Distribution Table &rarr;</a>
+&nbsp;&nbsp;|&nbsp;&nbsp;
+<a href="../ftable/" class="ref-link">F-Distribution Table &rarr;</a>
+</p>
+</div>
+</div>
+
+<!-- Tab 3: Calculator -->
+<div class="tab-panel" id="pw-panel-calculator">
+<div class="content-card">
+<h2>Two-Sample T-Test Calculator</h2>
+
+<p>Set your parameters below. The sample size updates automatically using the <strong>exact t-distribution</strong> with iterative convergence.</p>
+
+<div class="slider-row">
+<label for="pw-alpha">&alpha; (Sig. Level)</label>
+<input type="range" id="pw-alpha" min="0.01" max="0.20" step="0.01" value="0.05">
+<span class="slider-value" id="pw-alphaVal">0.05</span>
+</div>
+
+<div class="slider-row">
+<label for="pw-power">Power (1&minus;&beta;)</label>
+<input type="range" id="pw-power" min="0.70" max="0.99" step="0.01" value="0.80">
+<span class="slider-value" id="pw-powerVal">0.80</span>
+</div>
+
+<div class="slider-row">
+<label for="pw-sigma">Std Deviation (&sigma;)</label>
+<input type="range" id="pw-sigma" min="0.1" max="10.0" step="0.1" value="1.0">
+<span class="slider-value" id="pw-sigmaVal">1.0</span>
+</div>
+
+<div class="slider-row">
+<label for="pw-delta">Raw Difference (&delta;)</label>
+<input type="range" id="pw-delta" min="0.1" max="10.0" step="0.1" value="0.5">
+<span class="slider-value" id="pw-deltaVal">0.5</span>
+</div>
+
+<div class="radio-row">
+<label class="radio-label">Test Type</label>
+<label class="radio-option">
+<input type="radio" name="pw-testtype" value="two" checked>
+Two-Sided
+</label>
+<label class="radio-option">
+<input type="radio" name="pw-testtype" value="one">
+One-Sided
+</label>
+</div>
+
+<div class="stat-grid" id="pw-resultsGrid">
+<div class="stat-item">
+<div class="stat-value" id="pw-cohensd">0.50</div>
+<div class="stat-label">Cohen&rsquo;s d (&delta;/&sigma;)</div>
+</div>
+<div class="stat-item highlight-card">
+<div class="stat-value" id="pw-nPerGroup">64</div>
+<div class="stat-label">n Per Group</div>
+</div>
+<div class="stat-item highlight-card">
+<div class="stat-value" id="pw-nTotal">128</div>
+<div class="stat-label">Total Sample Size</div>
+</div>
+<div class="stat-item">
+<div class="stat-value" id="pw-df">&mdash;</div>
+<div class="stat-label">Degrees of Freedom</div>
+</div>
+<div class="stat-item">
+<div class="stat-value" id="pw-tCrit">&mdash;</div>
+<div class="stat-label">t-Critical Value</div>
+</div>
+</div>
+
+<h3>Sample Size vs. Cohen&rsquo;s d</h3>
+<p>This chart shows how the required sample size changes across a range of effect sizes, holding your current &alpha; and power constant. The red dot marks your current d.</p>
+
+<div class="canvas-wrap">
+<canvas id="pw-chartCanvas"></canvas>
+</div>
+
+<div class="callout">
+<div class="callout-title">Reading the Curve</div>
+The curve is steep for small effect sizes (d &lt; 0.3): tiny effects require enormous samples. As d grows, sample requirements drop rapidly. This is why defining a realistic <strong>MCID</strong> (minimum clinically important difference) is so critical&mdash;it determines where you land on this curve.
+</div>
+</div>
+</div>
+
+<!-- Tab 4: Visualize Power -->
+<div class="tab-panel" id="pw-panel-visualize">
+<div class="content-card">
+<h2>What Power Looks Like</h2>
+
+<p>Power is the probability of rejecting the null hypothesis <em>when the alternative is true</em>. The visualization below shows two <strong>t-distributions</strong> (not normal&mdash;notice the heavier tails):</p>
+
+<div class="key-definition">
+<p><strong>Blue curve:</strong> the null t-distribution (H<sub>0</sub>: no effect).<br>
+<strong>Green curve:</strong> the alternative t-distribution (H<sub>A</sub>: true effect = &delta;).<br>
+<strong>Red dashed line:</strong> the t-critical value. Anything to the right is rejected.<br>
+<strong>Green shaded area:</strong> this is <em>power</em>&mdash;the probability of correctly rejecting H<sub>0</sub>.</p>
+</div>
+
+<div class="slider-row">
+<label for="pw-vizDelta">Effect Size (&delta;)</label>
+<input type="range" id="pw-vizDelta" min="0.1" max="4.0" step="0.05" value="1.5">
+<span class="slider-value" id="pw-vizDeltaVal">1.50</span>
+</div>
+
+<div class="slider-row">
+<label for="pw-vizN">Sample Size (n)</label>
+<input type="range" id="pw-vizN" min="5" max="200" step="1" value="30">
+<span class="slider-value" id="pw-vizNVal">30</span>
+</div>
+
+<div class="slider-row">
+<label for="pw-vizAlpha">&alpha;</label>
+<input type="range" id="pw-vizAlpha" min="0.01" max="0.20" step="0.01" value="0.05">
+<span class="slider-value" id="pw-vizAlphaVal">0.05</span>
+</div>
+
+<div class="canvas-wrap dist-canvas-wrap">
+<canvas id="pw-distCanvas"></canvas>
+</div>
+
+<div class="stat-grid" id="pw-vizStats">
+<div class="stat-item">
+<div class="stat-value" id="pw-vizPower">&mdash;</div>
+<div class="stat-label">Power (1&minus;&beta;)</div>
+</div>
+<div class="stat-item">
+<div class="stat-value" id="pw-vizBeta">&mdash;</div>
+<div class="stat-label">&beta; (Type II Error)</div>
+</div>
+<div class="stat-item">
+<div class="stat-value" id="pw-vizCritical">&mdash;</div>
+<div class="stat-label">t-Critical Value</div>
+</div>
+<div class="stat-item">
+<div class="stat-value" id="pw-vizDf">&mdash;</div>
+<div class="stat-label">Degrees of Freedom</div>
+</div>
+</div>
+
+<div class="callout warning">
+<div class="callout-title">Try It</div>
+Drag <strong>Sample Size</strong> up and watch the green area grow&mdash;that is power increasing. With small n, notice the t-distributions have heavier tails (more uncertainty). As n grows, they sharpen toward the normal shape. Drag <strong>Effect Size</strong> toward zero to see the curves overlap, making signal indistinguishable from noise.
+</div>
+</div>
+</div>
+
+<!-- Tab 5: Common Mistakes -->
+<div class="tab-panel" id="pw-panel-mistakes">
+<div class="content-card">
+<h2>Common Mistakes</h2>
+
+<ol class="mistake-list">
+<li><strong>Using &ldquo;small/medium/large&rdquo; effect sizes</strong> without domain context. Define the MCID specific to your problem&mdash;what is the smallest difference that would change a decision?</li>
+<li><strong>Underestimating variance (&sigma;)</strong> from pilot data. Be conservative&mdash;if uncertain, overestimate noise slightly. Underestimation guarantees an underpowered study.</li>
+<li><strong>Ignoring budget constraints</strong> then pretending a reduced sample still has 80% power. Acknowledge when your study is underpowered.</li>
+<li><strong>Using one-sided tests</strong> to shrink the sample size. Default to two-sided unless you can prove the intervention cannot cause harm.</li>
+<li><strong>Computing &ldquo;observed power&rdquo; after</strong> a study using the observed effect size. Retrospective power analysis is statistically circular and provides no new information. Power is strictly a <em>pre-study</em> planning tool.</li>
+<li><strong>Using the Z-approximation</strong> for small samples. The normal distribution underestimates the required sample size when n is small. Always use the t-distribution (as our calculator does).</li>
+</ol>
+
+<h3>Workflow</h3>
+<ol class="steps-list">
+<li><strong>Define your hypothesis type:</strong> equality (superiority), non-inferiority, or equivalence.</li>
+<li><strong>Set &alpha; and power:</strong> typically &alpha; = 0.05, power = 0.80&ndash;0.90. Justify deviations based on error consequences.</li>
+<li><strong>Define MCID (&delta;):</strong> the smallest raw effect that would change practice or justify costs. Consult stakeholders.</li>
+<li><strong>Estimate variance (&sigma;):</strong> use pilot data, published literature, or conservative estimates.</li>
+<li><strong>Calculate sample size:</strong> use our Calculator tab, or dedicated tools (G*Power, PASS) for more complex designs.</li>
+<li><strong>Run sensitivity analysis:</strong> show how sample size changes with reasonable variations in &delta; and &sigma;. This demonstrates robustness.</li>
+</ol>
+
+<div class="callout danger">
+<div class="callout-title">The Biggest Risk</div>
+The greatest risk in research is not failing to find an effect&mdash;it is designing a study incapable of answering your question. Power analysis is not a formality; it is an <strong>ethical obligation</strong> to use resources responsibly.
+</div>
+</div>
+</div>
+
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ================================================================
+   DOM HELPERS
+   ================================================================ */
+function $(id) { return document.getElementById(id); }
+
+/* ================================================================
+   T-DISTRIBUTION MATH (shared with regression & phacking pages)
+   ================================================================ */
+function lgamma(x) {
+  var c = [0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if (x < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * x)) - lgamma(1 - x);
+  x -= 1;
+  var a = c[0], t = x + 7.5;
+  for (var i = 1; i < 9; i++) a += c[i] / (x + i);
+  return 0.5 * Math.log(2 * Math.PI) + (x + 0.5) * Math.log(t) - t + Math.log(a);
+}
+
+function betaCF(x, a, b) {
+  var qab = a + b, qap = a + 1, qam = a - 1;
+  var cc = 1, d = 1 - qab * x / qap;
+  if (Math.abs(d) < 1e-10) d = 1e-10;
+  d = 1 / d; var h = d;
+  for (var m = 1; m <= 200; m++) {
+    var m2 = 2 * m;
+    var aa = m * (b - m) * x / ((qam + m2) * (a + m2));
+    d = 1 + aa * d; if (Math.abs(d) < 1e-10) d = 1e-10;
+    cc = 1 + aa / cc; if (Math.abs(cc) < 1e-10) cc = 1e-10;
+    d = 1 / d; h *= d * cc;
+    aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2));
+    d = 1 + aa * d; if (Math.abs(d) < 1e-10) d = 1e-10;
+    cc = 1 + aa / cc; if (Math.abs(cc) < 1e-10) cc = 1e-10;
+    d = 1 / d; var del = d * cc; h *= del;
+    if (Math.abs(del - 1) < 1e-10) break;
+  }
+  return h;
+}
+
+function incompleteBeta(x, a, b) {
+  if (x === 0) return 0; if (x === 1) return 1;
+  var bt = Math.exp(lgamma(a + b) - lgamma(a) - lgamma(b) + a * Math.log(x) + b * Math.log(1 - x));
+  if (x < (a + 1) / (a + b + 2)) return bt * betaCF(x, a, b) / a;
+  return 1 - bt * betaCF(1 - x, b, a) / b;
+}
+
+function tCDF(t, df) {
+  var x = df / (df + t * t);
+  var p = incompleteBeta(x, df / 2, 0.5);
+  return t >= 0 ? 1 - 0.5 * p : 0.5 * p;
+}
+
+function tPDF(t, df) {
+  var num = lgamma((df + 1) / 2) - lgamma(df / 2);
+  var denom = 0.5 * Math.log(df * Math.PI);
+  return Math.exp(num - denom - ((df + 1) / 2) * Math.log(1 + t * t / df));
+}
+
+function normInv(p) {
+  if (p <= 0) return -Infinity;
+  if (p >= 1) return Infinity;
+  if (p < 0.5) return -normInv(1 - p);
+  var t = Math.sqrt(-2 * Math.log(1 - p));
+  var c0 = 2.515517, c1 = 0.802853, c2 = 0.010328;
+  var d1 = 1.432788, d2 = 0.189269, d3 = 0.001308;
+  return t - (c0 + c1 * t + c2 * t * t) / (1 + d1 * t + d2 * t * t + d3 * t * t * t);
+}
+
+function tInv(p, df) {
+  if (p <= 0) return -Infinity;
+  if (p >= 1) return Infinity;
+  if (df >= 300) return normInv(p);
+  var t = normInv(p);
+  for (var i = 0; i < 20; i++) {
+    var cdfVal = tCDF(t, df);
+    var pdfVal = tPDF(t, df);
+    if (pdfVal < 1e-15) break;
+    var delta = (cdfVal - p) / pdfVal;
+    t = t - delta;
+    if (Math.abs(delta) < 1e-12) break;
+  }
+  return t;
+}
+
+/* ================================================================
+   SAMPLE SIZE CALCULATION — Iterative with t-distribution
+   ================================================================ */
+function calcSampleSize(alpha, power, cohensD, twoSided) {
+  if (cohensD <= 0) return Infinity;
+  var zAlpha = twoSided ? normInv(1 - alpha / 2) : normInv(1 - alpha);
+  var zBeta = normInv(power);
+  var nInit = Math.ceil(2 * Math.pow(zAlpha + zBeta, 2) / Math.pow(cohensD, 2));
+  if (nInit < 2) nInit = 2;
+
+  var n = nInit;
+  for (var iter = 0; iter < 50; iter++) {
+    var df = 2 * (n - 1);
+    var tAlpha = twoSided ? tInv(1 - alpha / 2, df) : tInv(1 - alpha, df);
+    var tBeta = tInv(power, df);
+    var nNew = Math.ceil(2 * Math.pow(tAlpha + tBeta, 2) / Math.pow(cohensD, 2));
+    if (nNew < 2) nNew = 2;
+    if (nNew === n) break;
+    n = nNew;
+  }
+  return n;
+}
+
+/* ================================================================
+   TAB 3: CALCULATOR
+   ================================================================ */
+var alphaSlider = $('pw-alpha');
+var powerSlider = $('pw-power');
+var sigmaSlider = $('pw-sigma');
+var deltaSlider = $('pw-delta');
+var chartCanvas = $('pw-chartCanvas');
+
+function getTestType() {
+  var radios = document.querySelectorAll('input[name="pw-testtype"]');
+  for (var i = 0; i < radios.length; i++) {
+    if (radios[i].checked) return radios[i].value;
+  }
+  return 'two';
+}
+
+function updateCalculator() {
+  var alpha = parseFloat(alphaSlider.value);
+  var power = parseFloat(powerSlider.value);
+  var sigma = parseFloat(sigmaSlider.value);
+  var delta = parseFloat(deltaSlider.value);
+  var twoSided = getTestType() === 'two';
+
+  $('pw-alphaVal').textContent = alpha.toFixed(2);
+  $('pw-powerVal').textContent = power.toFixed(2);
+  $('pw-sigmaVal').textContent = sigma.toFixed(1);
+  $('pw-deltaVal').textContent = delta.toFixed(1);
+
+  var d = sigma > 0 ? delta / sigma : 0;
+  $('pw-cohensd').textContent = d.toFixed(2);
+
+  var nPerGroup = calcSampleSize(alpha, power, d, twoSided);
+  var nTotal = isFinite(nPerGroup) ? nPerGroup * 2 : Infinity;
+
+  var df = isFinite(nPerGroup) ? 2 * (nPerGroup - 1) : 0;
+  var tCrit = isFinite(nPerGroup) && df > 0 ? tInv(1 - (twoSided ? alpha / 2 : alpha), df) : 0;
+
+  $('pw-nPerGroup').textContent = isFinite(nPerGroup) ? nPerGroup : '\u221E';
+  $('pw-nTotal').textContent = isFinite(nTotal) ? nTotal : '\u221E';
+  $('pw-df').textContent = isFinite(nPerGroup) ? df : '\u2014';
+  $('pw-tCrit').textContent = isFinite(tCrit) && tCrit > 0 ? tCrit.toFixed(3) : '\u2014';
+
+  drawChart(alpha, power, d, twoSided);
+}
+
+function drawChart(alpha, power, currentD, twoSided) {
+  var canvas = chartCanvas;
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  var w = rect.width, h = rect.height;
+  var pad = { left: 60, right: 30, top: 25, bottom: 40 };
+  var pw = w - pad.left - pad.right;
+  var ph = h - pad.top - pad.bottom;
+
+  var pts = [];
+  var maxN = 0;
+  for (var dd = 0.1; dd <= 2.01; dd += 0.05) {
+    var n = calcSampleSize(alpha, power, dd, twoSided);
+    if (!isFinite(n)) n = 2000;
+    if (n > 2000) n = 2000;
+    pts.push({ d: dd, n: n });
+    if (n > maxN) maxN = n;
+  }
+  maxN = Math.max(maxN, 50);
+
+  function mapX(d) { return pad.left + ((d - 0.1) / (2.0 - 0.1)) * pw; }
+  function mapY(n) { return pad.top + ph - (n / maxN) * ph; }
+
+  ctx.clearRect(0, 0, w, h);
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  var yTicks = 5;
+  for (var yt = 0; yt <= yTicks; yt++) {
+    var yv = (maxN / yTicks) * yt;
+    var yy = mapY(yv);
+    ctx.beginPath(); ctx.moveTo(pad.left, yy); ctx.lineTo(pad.left + pw, yy); ctx.stroke();
+  }
+
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.beginPath();
+  ctx.moveTo(pad.left, pad.top);
+  ctx.lineTo(pad.left, pad.top + ph);
+  ctx.lineTo(pad.left + pw, pad.top + ph);
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'center';
+  for (var xt = 0.2; xt <= 2.0; xt += 0.2) {
+    var xx = mapX(xt);
+    ctx.beginPath(); ctx.moveTo(xx, pad.top + ph); ctx.lineTo(xx, pad.top + ph + 5); ctx.stroke();
+    ctx.fillText(xt.toFixed(1), xx, pad.top + ph + 18);
+  }
+  ctx.fillText("Cohen's d", pad.left + pw / 2, pad.top + ph + 35);
+
+  ctx.textAlign = 'right';
+  for (var yl = 0; yl <= yTicks; yl++) {
+    var yVal = Math.round((maxN / yTicks) * yl);
+    ctx.fillText(yVal.toString(), pad.left - 8, mapY(yVal) + 4);
+  }
+
+  ctx.save();
+  ctx.translate(14, pad.top + ph / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillText('n Per Group', 0, 0);
+  ctx.restore();
+
+  ctx.beginPath();
+  ctx.moveTo(mapX(pts[0].d), mapY(pts[0].n));
+  for (var i = 1; i < pts.length; i++) {
+    ctx.lineTo(mapX(pts[i].d), mapY(pts[i].n));
+  }
+  ctx.strokeStyle = '#2dd4bf';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+
+  ctx.lineTo(mapX(pts[pts.length - 1].d), mapY(0));
+  ctx.lineTo(mapX(pts[0].d), mapY(0));
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(45, 212, 191, 0.08)';
+  ctx.fill();
+
+  if (currentD >= 0.1 && currentD <= 2.0) {
+    var markerN = calcSampleSize(alpha, power, currentD, twoSided);
+    if (!isFinite(markerN)) markerN = 2000;
+    if (markerN > 2000) markerN = 2000;
+    var mx = mapX(currentD);
+    var my = mapY(markerN);
+
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = 'rgba(248, 113, 113, 0.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(mx, pad.top + ph); ctx.lineTo(mx, my); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.left, my); ctx.lineTo(mx, my); ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.beginPath();
+    ctx.arc(mx, my, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#f87171';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.fillStyle = '#f87171';
+    ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('d=' + currentD.toFixed(2) + ', n=' + markerN, mx, my - 12);
+  }
+}
+
+alphaSlider.addEventListener('input', updateCalculator);
+powerSlider.addEventListener('input', updateCalculator);
+sigmaSlider.addEventListener('input', updateCalculator);
+deltaSlider.addEventListener('input', updateCalculator);
+var radios = document.querySelectorAll('input[name="pw-testtype"]');
+for (var r = 0; r < radios.length; r++) {
+  radios[r].addEventListener('change', updateCalculator);
+}
+
+/* ================================================================
+   TAB 4: POWER VISUALIZATION (Two t-distribution overlay)
+   ================================================================ */
+var vizDelta = $('pw-vizDelta');
+var vizN = $('pw-vizN');
+var vizAlpha = $('pw-vizAlpha');
+var distCanvas = $('pw-distCanvas');
+
+function updateViz() {
+  var delta = parseFloat(vizDelta.value);
+  var n = parseInt(vizN.value, 10);
+  var alpha = parseFloat(vizAlpha.value);
+
+  $('pw-vizDeltaVal').textContent = delta.toFixed(2);
+  $('pw-vizNVal').textContent = n;
+  $('pw-vizAlphaVal').textContent = alpha.toFixed(2);
+
+  var df = 2 * (n - 1);
+  var se = Math.sqrt(2 / n);
+  var ncp = delta / se;
+  var tCrit = tInv(1 - alpha / 2, df);
+  var powerVal = 1 - tCDF(tCrit - ncp, df);
+  var betaVal = 1 - powerVal;
+
+  $('pw-vizPower').textContent = (powerVal * 100).toFixed(1) + '%';
+  $('pw-vizBeta').textContent = (betaVal * 100).toFixed(1) + '%';
+  $('pw-vizCritical').textContent = tCrit.toFixed(3);
+  $('pw-vizDf').textContent = df;
+
+  drawDistOverlay(ncp, tCrit, powerVal, df);
+}
+
+function drawDistOverlay(ncp, tCritVal, powerVal, df) {
+  var canvas = distCanvas;
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  var w = rect.width, h = rect.height;
+  var pad = { left: 40, right: 30, top: 20, bottom: 30 };
+  var pw2 = w - pad.left - pad.right;
+  var ph2 = h - pad.top - pad.bottom;
+
+  var xMin = Math.min(-4, ncp - 4);
+  var xMax = Math.max(4, ncp + 4);
+  var yMax = tPDF(0, df) * 1.1;
+
+  function mapX(x) { return pad.left + ((x - xMin) / (xMax - xMin)) * pw2; }
+  function mapY(y) { return pad.top + ph2 - (y / yMax) * ph2; }
+
+  ctx.clearRect(0, 0, w, h);
+
+  ctx.beginPath();
+  ctx.moveTo(pad.left, pad.top + ph2);
+  ctx.lineTo(pad.left + pw2, pad.top + ph2);
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'center';
+  var step = 1;
+  if (xMax - xMin > 12) step = 2;
+  for (var tick = Math.ceil(xMin); tick <= Math.floor(xMax); tick += step) {
+    var tx = mapX(tick);
+    ctx.beginPath(); ctx.moveTo(tx, pad.top + ph2); ctx.lineTo(tx, pad.top + ph2 + 4); ctx.stroke();
+    ctx.fillText(tick.toString(), tx, pad.top + ph2 + 16);
+  }
+
+  var resolution = 0.08;
+
+  /* Power shading (green): alt curve right of tCrit */
+  ctx.beginPath();
+  ctx.moveTo(mapX(tCritVal), mapY(0));
+  for (var x = tCritVal; x <= xMax; x += resolution) {
+    ctx.lineTo(mapX(x), mapY(tPDF(x - ncp, df)));
+  }
+  ctx.lineTo(mapX(xMax), mapY(0));
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(52, 211, 153, 0.3)';
+  ctx.fill();
+
+  /* Alpha shading (red): null curve right of tCrit */
+  ctx.beginPath();
+  ctx.moveTo(mapX(tCritVal), mapY(0));
+  for (var xa = tCritVal; xa <= xMax; xa += resolution) {
+    ctx.lineTo(mapX(xa), mapY(tPDF(xa, df)));
+  }
+  ctx.lineTo(mapX(xMax), mapY(0));
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(248, 113, 113, 0.2)';
+  ctx.fill();
+
+  /* Null t-distribution curve (blue) */
+  ctx.beginPath();
+  for (var xn = xMin; xn <= xMax; xn += resolution) {
+    var yN = tPDF(xn, df);
+    if (xn <= xMin + resolution) ctx.moveTo(mapX(xn), mapY(yN));
+    else ctx.lineTo(mapX(xn), mapY(yN));
+  }
+  ctx.strokeStyle = 'rgba(96, 165, 250, 0.9)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  /* Alternative t-distribution curve (green) */
+  ctx.beginPath();
+  for (var xalt = xMin; xalt <= xMax; xalt += resolution) {
+    var yA = tPDF(xalt - ncp, df);
+    if (xalt <= xMin + resolution) ctx.moveTo(mapX(xalt), mapY(yA));
+    else ctx.lineTo(mapX(xalt), mapY(yA));
+  }
+  ctx.strokeStyle = 'rgba(52, 211, 153, 0.9)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  /* Critical value line (red dashed) */
+  ctx.setLineDash([5, 5]);
+  ctx.strokeStyle = 'rgba(248, 113, 113, 0.8)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(mapX(tCritVal), mapY(0));
+  ctx.lineTo(mapX(tCritVal), pad.top);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'center';
+
+  ctx.fillStyle = 'rgba(96, 165, 250, 0.9)';
+  ctx.fillText('H\u2080 (null)', mapX(0), mapY(tPDF(0, df)) - 8);
+
+  ctx.fillStyle = 'rgba(52, 211, 153, 0.9)';
+  ctx.fillText('H\u2090 (true effect)', mapX(ncp), mapY(tPDF(0, df)) - 8);
+
+  ctx.fillStyle = '#f87171';
+  ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillText('t-critical', mapX(tCritVal), pad.top + 12);
+
+  if (powerVal > 0.05) {
+    ctx.fillStyle = 'rgba(52, 211, 153, 0.9)';
+    ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, sans-serif';
+    var labelX = mapX(Math.max(tCritVal + 0.5, ncp));
+    var labelY = mapY(tPDF(0, df) * 0.3);
+    ctx.fillText('Power = ' + (powerVal * 100).toFixed(0) + '%', labelX, labelY);
+  }
+
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('df = ' + df, pad.left + 4, pad.top + 12);
+}
+
+vizDelta.addEventListener('input', updateViz);
+vizN.addEventListener('input', updateViz);
+vizAlpha.addEventListener('input', updateViz);
+
+/* ================================================================
+   TAB SWITCHING
+   ================================================================ */
+var tabBtns = document.querySelectorAll('.tab-btn');
+var tabPanels = document.querySelectorAll('.tab-panel');
+
+function activateTab(tabId) {
+  for (var i = 0; i < tabBtns.length; i++) {
+    tabBtns[i].classList[tabBtns[i].dataset.tab === tabId ? 'add' : 'remove']('active');
+  }
+  for (var j = 0; j < tabPanels.length; j++) {
+    tabPanels[j].classList[tabPanels[j].id === 'pw-panel-' + tabId ? 'add' : 'remove']('active');
+  }
+  if (tabId === 'calculator') {
+    setTimeout(function() { updateCalculator(); }, 30);
+  }
+  if (tabId === 'visualize') {
+    setTimeout(function() { updateViz(); }, 30);
+  }
+}
+
+for (var ti = 0; ti < tabBtns.length; ti++) {
+  tabBtns[ti].addEventListener('click', function() { activateTab(this.dataset.tab); });
+}
+
+/* ================================================================
+   RESIZE HANDLER
+   ================================================================ */
+var resizeTimer = null;
+window.addEventListener('resize', function() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function() {
+    var calcPanel = $('pw-panel-calculator');
+    if (calcPanel && calcPanel.classList.contains('active')) updateCalculator();
+    var vizPanel = $('pw-panel-visualize');
+    if (vizPanel && vizPanel.classList.contains('active')) updateViz();
+  }, 100);
+});
+})();
+</script>
+
+</body>
+</html>
