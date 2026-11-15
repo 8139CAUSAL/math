@@ -128,10 +128,10 @@ function svgEl(tag,attrs={},text=''){const node=document.createElementNS('http:/
 function emptySvg(width,height){return svgEl('svg',{viewBox:`0 0 ${width} ${height}`,role:'presentation',xmlns:'http://www.w3.org/2000/svg'});}
 function graphCI(target,items){const svg=emptySvg(760,175+items.length*50),w=760,left=165,right=48,top=42,bottom=40,plotRight=w-right;
   let valMax=Math.max(6,...items.flatMap(item=>[Math.abs(item.lo),Math.abs(item.hi)]));const spread=Math.ceil(valMax/2)*2;function X(x){return left+(x+spread)/(2*spread)*(plotRight-left);}const baselineY=top-18,stopY=100+items.length*47;
-  svg.appendChild(svgEl('line',{x1:X(0),y1:baselineY,x2:X(0),y2:stopY,stroke:'#95aac6','stroke-dasharray':'5 5','stroke-width':1.6}));
-  for(const v of [-spread,0,spread]){svg.appendChild(svgEl('text',{x:X(v),y:stopY+23,fill:'#cedbee','text-anchor':'middle','font-size':15},String(v)));}
-  for(let i=0;i<items.length;i++){const item=items[i],y=76+i*47,color=i===0&&items.length>1?'#ffcb75':'#45e1ca';svg.appendChild(svgEl('text',{x:13,y:y+4,fill:'#f1f8ff','font-size':15},item.name));svg.appendChild(svgEl('line',{x1:X(item.lo),y1:y,x2:X(item.hi),y2:y,stroke:color,'stroke-width':5,'stroke-linecap':'round'}));for(const v of [item.lo,item.hi])svg.appendChild(svgEl('line',{x1:X(v),y1:y-7,x2:X(v),y2:y+7,stroke:color,'stroke-width':2}));svg.appendChild(svgEl('circle',{cx:X(item.diff),cy:y,r:7,fill:color,stroke:'#1f2d45','stroke-width':2}));}
-  svg.appendChild(svgEl('text',{x:(left+plotRight)/2,y:stopY+43,fill:'#cfddf0','text-anchor':'middle','font-size':13},'Difference in index points · zero means no effect'));
+  svg.appendChild(svgEl('line',{x1:X(0),y1:baselineY,x2:X(0),y2:stopY,stroke:'rgba(255,255,255,0.3)','stroke-dasharray':'5 5','stroke-width':1.6}));
+  for(const v of [-spread,0,spread]){svg.appendChild(svgEl('text',{x:X(v),y:stopY+23,fill:'rgba(255,255,255,0.7)','text-anchor':'middle','font-size':15},String(v)));}
+  for(let i=0;i<items.length;i++){const item=items[i],y=76+i*47,color=i===0&&items.length>1?'#fbbf24':'#2dd4bf';svg.appendChild(svgEl('text',{x:13,y:y+4,fill:'#ffffff','font-size':15},item.name));svg.appendChild(svgEl('line',{x1:X(item.lo),y1:y,x2:X(item.hi),y2:y,stroke:color,'stroke-width':5,'stroke-linecap':'round'}));for(const v of [item.lo,item.hi])svg.appendChild(svgEl('line',{x1:X(v),y1:y-7,x2:X(v),y2:y+7,stroke:color,'stroke-width':2}));svg.appendChild(svgEl('circle',{cx:X(item.diff),cy:y,r:7,fill:color,stroke:'#3b4b77','stroke-width':2}));}
+  svg.appendChild(svgEl('text',{x:(left+plotRight)/2,y:stopY+43,fill:'rgba(255,255,255,0.7)','text-anchor':'middle','font-size':13},'Difference in index points · zero means no effect'));
   target.replaceChildren(svg);
 }
 function graphCurve(target,results,selected){
@@ -146,12 +146,12 @@ function graphCurve(target,results,selected){
   svg.setAttribute('role','group');
   svg.setAttribute('aria-label','Estimated treatment effects. Use arrow keys to inspect different analyses.');
   for(const yv of [-lim,0,lim]){
-    svg.appendChild(svgEl('line',{x1:left,y1:Y(yv),x2:w-right,y2:Y(yv),stroke:yv===0?'#f5e2b6':'#6d7f9e','stroke-dasharray':yv===0?'6 5':'3 8','stroke-width':yv===0?2:1}));
-    svg.appendChild(svgEl('text',{x:left-13,y:Y(yv)+5,fill:'#d6e1f0','text-anchor':'end','font-size':16},String(yv)));
+    svg.appendChild(svgEl('line',{x1:left,y1:Y(yv),x2:w-right,y2:Y(yv),stroke:yv===0?'rgba(255,255,255,0.5)':'rgba(255,255,255,0.2)','stroke-dasharray':yv===0?'6 5':'3 8','stroke-width':yv===0?2:1}));
+    svg.appendChild(svgEl('text',{x:left-13,y:Y(yv)+5,fill:'rgba(255,255,255,0.7)','text-anchor':'end','font-size':16},String(yv)));
   }
   let selectedIndex=0;
   sorted.forEach((r,i)=>{
-    const x=X(i),state=classification(r),color=state==='positive'?'#45e1ca':state==='negative'?'#ff918f':'#a9c9ff';
+    const x=X(i),state=classification(r),color=state==='positive'?'#2dd4bf':state==='negative'?'#f87171':'rgba(255,255,255,0.7)';
     const isPicked=specKey(r.spec)===specKey(selected.spec);
     if(isPicked)selectedIndex=i;
     svg.appendChild(svgEl('line',{x1:x,y1:Y(r.lo),x2:x,y2:Y(r.hi),stroke:color,'stroke-opacity':isPicked?.9:.22,'stroke-width':isPicked?3:1.3}));
@@ -160,8 +160,8 @@ function graphCurve(target,results,selected){
     svg.appendChild(circle);
     if(isPicked)svg.appendChild(svgEl('line',{x1:x,y1:top,x2:x,y2:h-bottom,stroke:'#ffffff','stroke-dasharray':'3 8','stroke-opacity':'.8'}));
   });
-  svg.appendChild(svgEl('text',{x:(left+w-right)/2,y:h-15,fill:'#d4dfed','text-anchor':'middle','font-size':15},'96 ways to analyze the data, sorted by estimated effect →'));
-  svg.appendChild(svgEl('text',{x:17,y:15,fill:'#d4dfed','font-size':14},'Effect (index points)'));
+  svg.appendChild(svgEl('text',{x:(left+w-right)/2,y:h-15,fill:'rgba(255,255,255,0.7)','text-anchor':'middle','font-size':15},'96 ways to analyze the data, sorted by estimated effect →'));
+  svg.appendChild(svgEl('text',{x:17,y:15,fill:'rgba(255,255,255,0.7)','font-size':14},'Effect (index points)'));
   target.replaceChildren(svg);
   function inspect(index){
     selectedIndex=Math.max(0,Math.min(sorted.length-1,index));

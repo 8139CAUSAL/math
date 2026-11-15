@@ -317,62 +317,46 @@ body {
   .callout { font-size: 14px; }
 }
 
-/* P-Hacking Lab (Version 3).
-   Every rule is scoped to <body class="ph-lab">. Scopes are wrapped in :where()
-   so each selector keeps the specificity it had in the standalone V3 file. */
+/* P-Hacking Lab (Version 3 layout and behaviour, Math Primer brand styling).
+   Scoped to <body class="ph-lab">. Colours, font family, type scale and
+   surfaces use the shared brand tokens and the patterns of the other sections
+   (.content-card, .stat-item, .callout, .input-group, brand pill buttons). */
+
+/* Series colours referenced by the lab's legend markup */
 body.ph-lab {
-  color-scheme: dark;
-  --bg: #253354;
-  --paper: #32436b;
-  --paper2: #394d78;
-  --line: #61749b;
-  --text: #f7faff;
-  --muted: #c4d0e3;
-  --teal: #45e1ca;
-  --amber: #ffcb75;
-  --red: #ff918f;
-  --sky: #a9c9ff;
-  --radius: 18px;
+  --teal: var(--brand-accent);
+  --amber: var(--brand-warning);
+  --red: var(--brand-danger);
+  --sky: var(--brand-text-muted);
 }
-:where(.ph-lab .shell) * {
-  box-sizing: border-box;
-}
-html:has(> body.ph-lab) {
-  scroll-behavior: smooth;
-}
-body.ph-lab {
-  margin: 0;
-  background: radial-gradient(ellipse at top left,#435786 0%,var(--bg) 60%);
-  color: var(--text);
-}
+
 :where(.ph-lab) .shell {
-  font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  line-height: 1.48;
+  max-width: 1120px;
+  padding: 30px 24px 72px;
+  margin: auto;
+  line-height: 1.5;
 }
 :where(.ph-lab .shell) button,
 :where(.ph-lab .shell) select {
-  font: inherit;
+  font-family: inherit;
 }
 :where(.ph-lab .shell) button {
   cursor: pointer;
 }
 :where(.ph-lab .shell) button:focus-visible,
 :where(.ph-lab .shell) select:focus-visible {
-  outline: 3px solid var(--teal);
+  outline: 2px solid var(--brand-accent);
   outline-offset: 3px;
 }
 :where(.ph-lab .shell) button:disabled {
-  opacity: .4;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 :where(.ph-lab .shell) a {
-  color: var(--teal);
+  color: var(--brand-accent);
 }
-:where(.ph-lab) .shell {
-  max-width: 1120px;
-  padding: 30px 24px 72px;
-  margin: auto;
-}
+
+/* Header */
 :where(.ph-lab) .top {
   display: flex;
   align-items: center;
@@ -381,134 +365,156 @@ body.ph-lab {
   flex-wrap: wrap;
 }
 :where(.ph-lab) .brand {
-  font-weight: 800;
-  letter-spacing: .035em;
-  font-size: .92rem;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--brand-text);
 }
 :where(.ph-lab) .pill {
-  border: 1px solid #7b98b9;
-  border-radius: 30px;
-  padding: 6px 11px;
-  font-size: .77rem;
-  color: #e8f2ff;
+  border: 1px solid var(--brand-border);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--brand-text-muted);
 }
 :where(.ph-lab) .eyebrow {
   text-transform: uppercase;
-  font-size: .72rem;
-  font-weight: 800;
-  letter-spacing: .12em;
-  color: var(--teal);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--brand-accent);
 }
 :where(.ph-lab) .hero-title {
-  font-size: clamp(2.25rem,4.5vw,4.2rem);
-  line-height: 1.05;
-  letter-spacing: -.045em;
-  margin: 28px 0 12px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--brand-text);
+  margin: 12px 0 12px;
   max-width: 900px;
 }
 :where(.ph-lab .shell) h2 {
-  font-size: clamp(1.45rem,3vw,2.1rem);
-  letter-spacing: -.025em;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--brand-text);
   margin: 0;
 }
 :where(.ph-lab .shell) h3 {
-  font-size: 1.06rem;
-  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--brand-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 8px;
 }
 :where(.ph-lab) .intro {
-  color: #d8e2f2;
+  color: var(--brand-text-muted);
   max-width: 840px;
-  font-size: 1.07rem;
-  margin: 0 0 22px;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+:where(.ph-lab) .intro strong,
+:where(.ph-lab) .actlead strong {
+  color: var(--brand-text);
 }
 :where(.ph-lab) .emph {
-  color: var(--teal);
+  color: var(--brand-accent);
 }
 :where(.ph-lab) .setup {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-  margin: 20px 0 26px;
+  margin: 20px 0 24px;
 }
+:where(.ph-lab) .setup-note {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--brand-text-muted);
+  max-width: 510px;
+}
+
+/* Buttons — brand pills */
 :where(.ph-lab) .ghost,
 :where(.ph-lab) .primary,
 :where(.ph-lab) .secondary,
 :where(.ph-lab) .danger {
-  padding: 11px 16px;
-  border-radius: 11px;
-  font-size: .92rem;
-  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
   border: 1px solid transparent;
+  transition: all 0.2s ease;
 }
 :where(.ph-lab) .primary {
-  background: var(--teal);
-  color: #102e38;
+  background: var(--brand-accent);
+  color: var(--brand-background);
 }
 :where(.ph-lab) .primary:hover:not(:disabled) {
-  background: #84ffe7;
+  filter: brightness(1.1);
+  transform: translateY(-1px);
 }
 :where(.ph-lab) .secondary {
-  background: #516993;
-  color: white;
-  border: 1px solid #748cb1;
+  background: var(--bg-card-raised);
+  color: var(--brand-text);
+  border: 1px solid var(--brand-border);
 }
 :where(.ph-lab) .secondary:hover:not(:disabled) {
-  background: #637ca3;
+  border-color: var(--brand-text);
 }
 :where(.ph-lab) .ghost {
   background: transparent;
-  color: #e0eafd;
-  border-color: #7688aa;
+  color: var(--brand-text-muted);
+  border-color: var(--brand-border);
 }
 :where(.ph-lab) .ghost:hover:not(:disabled) {
-  background: #52648a;
+  border-color: var(--brand-text);
+  color: var(--brand-text);
 }
 :where(.ph-lab) .danger {
-  background: #9f5f68;
-  color: white;
+  background: var(--brand-danger);
+  color: var(--brand-text);
 }
-:where(.ph-lab) .setup-note {
-  font-size: .83rem;
-  color: var(--muted);
-  max-width: 510px;
-}
+
+/* Stage bar */
 :where(.ph-lab) .stepbar {
   display: grid;
-  grid-template-columns: repeat(3,1fr);
-  gap: 10px;
-  margin-bottom: 25px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
 }
 :where(.ph-lab) .step {
-  background: #1d2b48;
-  border: 1px solid #597095;
-  border-radius: 12px;
-  padding: 11px;
-  font-size: .83rem;
-  color: #b9cbe0;
+  background: var(--bg-card);
+  border: 1px solid var(--brand-border-dim);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: var(--brand-text-muted);
 }
 :where(.ph-lab) .step b {
   display: block;
-  font-size: 1rem;
-  color: #f2f6fc;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--brand-text);
 }
 :where(.ph-lab) .step.current {
-  border-color: var(--teal);
-  background: #2c4f65;
+  border-color: var(--brand-accent);
+  background: var(--accent-tint);
 }
 :where(.ph-lab) .step.complete {
-  border-color: #86a8ac;
+  border-color: var(--brand-border);
 }
+
+/* Act cards */
 :where(.ph-lab) .act {
-  background: rgba(44,59,94,.94);
-  border: 1px solid #6b80a7;
-  border-radius: var(--radius);
-  padding: clamp(18px,3vw,30px);
-  box-shadow: 0 15px 44px #17223d49;
-  margin-top: 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--brand-border-dim);
+  border-radius: 12px;
+  padding: 28px;
+  margin-top: 20px;
 }
 :where(.ph-lab) .act[hidden] {
-  display: none!important;
+  display: none !important;
 }
 :where(.ph-lab) .acttop {
   display: flex;
@@ -517,104 +523,137 @@ body.ph-lab {
   gap: 12px;
   flex-wrap: wrap;
 }
+:where(.ph-lab) .acttop .eyebrow {
+  margin-bottom: 6px;
+}
 :where(.ph-lab) .actlead {
-  color: #d2dfef;
-  margin: 8px 0 22px;
+  color: var(--brand-text-muted);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 8px 0 20px;
   max-width: 900px;
 }
-:where(.ph-lab) .accent {
-  color: var(--amber);
+:where(.ph-lab) .actlead em {
+  color: var(--brand-accent);
+  font-style: normal;
+  font-weight: 600;
 }
+:where(.ph-lab) .accent {
+  color: var(--brand-warning);
+}
+
+/* Badges */
 :where(.ph-lab) .badge {
   display: inline-flex;
   align-items: center;
-  border-radius: 50px;
-  padding: 6px 10px;
-  border: 1px solid #8097ac;
-  font-size: .76rem;
-  font-weight: 800;
+  border-radius: 999px;
+  padding: 5px 12px;
+  border: 1px solid var(--brand-border);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand-text-muted);
 }
 :where(.ph-lab) .badge.warn {
-  border-color: #c1a26c;
-  color: #ffe5ab;
+  border-color: var(--brand-warning);
+  background: var(--warning-tint);
+  color: var(--brand-warning);
 }
 :where(.ph-lab) .badge.good {
-  border-color: #6bbca9;
-  color: #aef5df;
+  border-color: var(--brand-success);
+  background: rgba(52, 211, 153, 0.08);
+  color: var(--brand-success);
 }
 :where(.ph-lab) .badge.bad {
-  border-color: #d78c8e;
-  color: #ffd0d0;
+  border-color: var(--brand-danger);
+  background: var(--danger-tint);
+  color: var(--brand-danger);
 }
+
+/* Layout grids */
 :where(.ph-lab) .grid {
   display: grid;
-  grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 20px;
 }
 :where(.ph-lab) .choice-grid {
   display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
 }
+
+/* Form fields — same treatment as .input-group */
 :where(.ph-lab) .field {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 :where(.ph-lab) .field label {
-  font-size: .8rem;
-  color: #d4e2f3;
-  font-weight: 750;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand-text);
 }
 :where(.ph-lab) .field select {
-  background: #263451;
-  border: 1px solid #8295b2;
-  color: white;
-  border-radius: 10px;
-  padding: 11px 12px;
+  color-scheme: dark;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--brand-border);
+  color: var(--brand-text);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
   width: 100%;
   min-width: 0;
+  transition: border-color 0.2s ease;
 }
+:where(.ph-lab) .field select:focus {
+  border-color: var(--brand-accent);
+}
+:where(.ph-lab) .field select option {
+  background: var(--brand-background);
+  color: var(--brand-text);
+}
+
+/* Readout card + stat tiles — same treatment as .stat-item */
 :where(.ph-lab) .card {
-  padding: 18px;
-  border: 1px solid #637ba4;
-  border-radius: 14px;
-  background: #263856;
+  padding: 18px 20px;
+  border: 1px solid var(--brand-border-dim);
+  border-radius: 8px;
+  background: var(--bg-card-raised);
 }
 :where(.ph-lab) .tiny {
-  font-size: .77rem;
-  color: #c7d5e7;
+  font-size: 12px;
+  color: var(--brand-text-muted);
 }
 :where(.ph-lab) .stats {
   display: grid;
-  grid-template-columns: repeat(3,minmax(0,1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin: 16px 0;
 }
 :where(.ph-lab) .stat {
-  background: #263855;
-  padding: 12px;
-  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--brand-border-dim);
+  padding: 12px 14px;
+  border-radius: 8px;
 }
 :where(.ph-lab) .stat-label {
-  color: #b9cae0;
-  font-size: .73rem;
-  font-weight: 750;
+  color: var(--brand-text-muted);
+  font-size: 12px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: .05em;
+  letter-spacing: 0.5px;
 }
 :where(.ph-lab) .stat-val {
-  font-size: clamp(1.15rem,2.2vw,1.65rem);
-  font-weight: 850;
-  letter-spacing: -.025em;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--brand-accent);
   font-variant-numeric: tabular-nums;
 }
 :where(.ph-lab) .big-p {
-  font-size: clamp(2.1rem,4vw,3.4rem);
-  font-weight: 850;
+  font-size: 32px;
+  font-weight: 700;
   line-height: 1.2;
+  color: var(--brand-text);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -.05em;
 }
 :where(.ph-lab) .readout {
   display: flex;
@@ -624,18 +663,25 @@ body.ph-lab {
   flex-wrap: wrap;
 }
 :where(.ph-lab) .subtle {
-  color: var(--muted);
-  font-size: .91rem;
+  color: var(--brand-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+:where(.ph-lab) .subtle strong {
+  color: var(--brand-text);
 }
 :where(.ph-lab) .result-line {
-  font-weight: 750;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand-text);
   margin-top: 10px;
   min-height: 20px;
 }
+
+/* Charts — same surface as the other sections' plot wrappers */
 :where(.ph-lab) .chartBox {
-  background: #24334f;
-  border: 1px solid #536b95;
-  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
   overflow: hidden;
   margin-top: 14px;
 }
@@ -644,20 +690,23 @@ body.ph-lab {
   height: auto;
   display: block;
 }
+
 :where(.ph-lab) .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
   margin: 18px 0 6px;
 }
 :where(.ph-lab) .hint {
-  color: #c8d5e6;
-  font-size: .83rem;
+  color: var(--brand-text-muted);
+  font-size: 13px;
   line-height: 1.5;
 }
+
+/* Analysis trail */
 :where(.ph-lab) .audit {
   margin-top: 16px;
-  border-top: 1px solid #61769b;
+  border-top: 1px solid var(--brand-border-dim);
   padding-top: 14px;
 }
 :where(.ph-lab) .audit-head {
@@ -665,46 +714,50 @@ body.ph-lab {
   justify-content: space-between;
   align-items: center;
   gap: 8px;
+  font-size: 14px;
 }
 :where(.ph-lab) .history {
   max-height: 125px;
   overflow-y: auto;
-  margin-top: 7px;
-  font-size: .82rem;
-  color: #d1def1;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--brand-text-muted);
 }
 :where(.ph-lab) .history div {
   padding: 4px 0;
-  border-bottom: 1px solid #496083;
+  border-bottom: 1px solid var(--brand-border-dim);
 }
 :where(.ph-lab) .history strong {
-  color: white;
+  color: var(--brand-text);
 }
+
+/* Act 2 */
 :where(.ph-lab) .headline {
-  font-size: clamp(1.4rem,3vw,2rem);
-  font-weight: 850;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--brand-text);
   margin: 10px 0;
-  line-height: 1.26;
+  line-height: 1.3;
 }
 :where(.ph-lab) .labelgrid {
   display: grid;
-  grid-template-columns: repeat(3,minmax(0,1fr));
-  gap: 10px;
-  margin: 17px 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0 24px;
 }
 :where(.ph-lab) .labelgrid .stat {
-  background: #344c6d;
+  background: var(--bg-card-raised);
 }
 :where(.ph-lab) .footnotes {
-  font-size: .8rem;
-  color: #c5d6e8;
+  font-size: 13px;
+  color: var(--brand-text-muted);
 }
 :where(.ph-lab) .legend {
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  color: #d2e0f0;
-  font-size: .79rem;
+  color: var(--brand-text-muted);
+  font-size: 13px;
   margin: 8px 0 0;
 }
 :where(.ph-lab) .dot {
@@ -712,16 +765,49 @@ body.ph-lab {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  margin-right: 5px;
+  margin-right: 6px;
 }
+/* Insight box — same treatment as .callout.warning */
 :where(.ph-lab) .insight {
-  border-left: 4px solid var(--amber);
-  padding: 11px 14px;
-  background: #5a4c51;
-  border-radius: 0 9px 9px 0;
-  margin-top: 17px;
-  color: #fff0dd;
+  border-left: 3px solid var(--brand-warning);
+  padding: 16px 20px;
+  background: var(--warning-tint);
+  border-radius: 0 8px 8px 0;
+  margin-top: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--brand-text-muted);
 }
+:where(.ph-lab) .insight strong {
+  color: var(--brand-text);
+}
+:where(.ph-lab) .curve-detail {
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--brand-border-dim);
+  border-radius: 8px;
+  color: var(--brand-text-muted);
+  min-height: 65px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+:where(.ph-lab) .methods {
+  margin-top: 14px;
+  color: var(--brand-text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+:where(.ph-lab) .methods summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--brand-text);
+}
+:where(.ph-lab) .methods p {
+  margin: 8px 0 0;
+}
+
+/* Act 3 */
 :where(.ph-lab) .repitems {
   margin: 12px 0;
   display: flex;
@@ -731,38 +817,20 @@ body.ph-lab {
   overflow-y: auto;
 }
 :where(.ph-lab) .repitem {
-  font-size: .82rem;
-  border: 1px solid #62799b;
+  font-size: 13px;
+  color: var(--brand-text-muted);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--brand-border-dim);
   border-radius: 8px;
-  padding: 8px;
+  padding: 8px 12px;
   display: flex;
   justify-content: space-between;
   gap: 12px;
 }
-:where(.ph-lab) .curve-detail {
-  margin-top: 10px;
-  padding: 11px 13px;
-  background: #24334f;
-  border: 1px solid #61769b;
-  border-radius: 10px;
-  color: #e0ecfb;
-  min-height: 65px;
-  font-size: .87rem;
+:where(.ph-lab) .repitem strong {
+  color: var(--brand-text);
 }
-:where(.ph-lab) .methods {
-  margin-top: 14px;
-  color: #d1dfef;
-  font-size: .88rem;
-  line-height: 1.55;
-}
-:where(.ph-lab) .methods summary {
-  cursor: pointer;
-  font-weight: 700;
-  color: #e2f3ff;
-}
-:where(.ph-lab) .methods p {
-  margin: 9px 0 0;
-}
+
 @media (max-width: 800px) {
   :where(.ph-lab) .grid {
     grid-template-columns: 1fr;
@@ -779,6 +847,18 @@ body.ph-lab {
     display: inline;
   }
 }
+@media (max-width: 600px) {
+  :where(.ph-lab) .act {
+    padding: 20px;
+  }
+  :where(.ph-lab) .hero-title {
+    font-size: 20px;
+  }
+  :where(.ph-lab .shell) h2,
+  :where(.ph-lab) .headline {
+    font-size: 18px;
+  }
+}
 @media (max-width: 520px) {
   :where(.ph-lab) .shell {
     padding: 18px 12px 50px;
@@ -791,14 +871,22 @@ body.ph-lab {
     grid-template-columns: 1fr 1fr;
   }
   :where(.ph-lab) .stat-val {
-    font-size: 1.22rem;
+    font-size: 18px;
   }
-  :where(.ph-lab) .act {
-    padding: 16px;
-  }
-  :where(.ph-lab) .actions>button {
+  :where(.ph-lab) .actions > button {
     flex: 1 1 auto;
   }
+}
+/* Body-text size steps used site-wide (.prose, .callout, .content-card p) */
+@media (max-width: 1366px) and (hover: none), (max-width: 1366px) and (pointer: coarse) {
+  :where(.ph-lab) .intro,
+  :where(.ph-lab) .actlead,
+  :where(.ph-lab) .insight { font-size: 16px; }
+}
+@media (max-width: 600px) {
+  :where(.ph-lab) .intro,
+  :where(.ph-lab) .actlead,
+  :where(.ph-lab) .insight { font-size: 14px; }
 }
 
 /* Integration with the shared section shell: the BACK | Title | NEXT nav and the
