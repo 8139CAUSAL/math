@@ -399,7 +399,7 @@ body.ph-lab {
   letter-spacing: .12em;
   color: var(--teal);
 }
-:where(.ph-lab .shell) h1 {
+:where(.ph-lab) .hero-title {
   font-size: clamp(2.25rem,4.5vw,4.2rem);
   line-height: 1.05;
   letter-spacing: -.045em;
